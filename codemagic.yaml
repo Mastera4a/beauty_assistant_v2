@@ -8,10 +8,6 @@ workflows:
         FLUTTER_VERSION: 3.22.1
       flutter: $FLUTTER_VERSION
       xcode: latest
-    triggering:
-      events:
-        - push
-        - manual
     scripts:
       - name: Get Flutter packages
         script: |
