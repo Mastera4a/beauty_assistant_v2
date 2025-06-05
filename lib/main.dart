@@ -10,6 +10,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'pages/onboarding_page.dart';
 import 'pages/main_screen.dart';
 import 'services/app_settings_service.dart';
+import 'utils/restart_widget.dart';
 
 // Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 //   await Firebase.initializeApp();
@@ -64,9 +65,11 @@ void main() async {
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
       startLocale: Locale(appSettingsService.language),
-      child: MyApp(
-        seenOnboarding: seenOnboarding,
-        settingsService: appSettingsService,
+      child: RestartWidget(
+        child: MyApp(
+          seenOnboarding: seenOnboarding,
+          settingsService: appSettingsService,
+        ),
       ),
     ),
   );

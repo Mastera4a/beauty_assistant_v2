@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../pages/main_screen.dart';
 import '../models/user_settings.dart';
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
+import '../utils/restart_widget.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -67,7 +69,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Onboarding')),
+      appBar: AppBar(title: Text('onboarding').tr()),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -76,18 +78,39 @@ class _OnboardingPageState extends State<OnboardingPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Choose your options:'),
+                Text('onboarding_title'.tr()),
+                DropdownButton<Locale>(
+                  value: context.locale,
+                  onChanged: (Locale? newLocale) async {
+                    if (newLocale != null) {
+                      await context.setLocale(newLocale);
+                      RestartWidget.restartApp(context);
+                    }
+                  },
+                  items: context.supportedLocales.map((locale) {
+                    return DropdownMenuItem<Locale>(
+                      value: locale,
+                      child: Text(
+                        locale.languageCode == 'en'
+                            ? 'English'
+                            : locale.languageCode == 'ru'
+                                ? 'Русский'
+                                : 'Deutsch',
+                      ),
+                    );
+                  }).toList(),
+                ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Work mode'),
+                  decoration: InputDecoration(labelText: 'work_mode'.tr()),
                   value: workMode,
-                  items: const [
-                    DropdownMenuItem(value: 'I work alone', child: Text('I work alone')),
-                    DropdownMenuItem(value: 'I own a salon', child: Text('I own a salon')),
+                  items: [
+                    DropdownMenuItem(value: 'I work alone', child: Text('i_work_alone').tr()),
+                    DropdownMenuItem(value: 'I own a salon', child: Text('i_own_salon').tr()),
                   ],
                   onChanged: (value) => setState(() => workMode = value!),
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Currency'),
+                  decoration: InputDecoration(labelText: 'currency'.tr()),
                   value: currency,
                   items: const [
                     DropdownMenuItem(value: '€', child: Text('Euro (€)')),
@@ -97,86 +120,86 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   onChanged: (value) => setState(() => currency = value!),
                 ),
                 SwitchListTile(
-                  title: const Text('Do you use a dry heat sterilizer?'),
+                  title: Text('dry_sterilizer').tr(),
                   value: usesSterilizer,
                   onChanged: (value) => setState(() => usesSterilizer = value),
                 ),
                 SwitchListTile(
-                  title: const Text('Do you use accounting software?'),
+                  title: Text('accounting_software').tr(),
                   value: usesAccounting,
                   onChanged: (value) => setState(() => usesAccounting = value),
                 ),
                 SwitchListTile(
-                  title: const Text('Do you use online booking tools?'),
+                  title: Text('online_booking').tr(),
                   value: usesOnlineBooking,
                   onChanged: (value) => setState(() => usesOnlineBooking = value),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Clients amount'),
+                  decoration: InputDecoration(labelText: 'clients_amount'.tr()),
                   keyboardType: TextInputType.number,
-                  validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                  validator: (value) => value == null || value.isEmpty ? 'required'.tr() : null,
                   onChanged: (value) => clientsAmount = int.tryParse(value) ?? 0,
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Clients unit'),
+                  decoration: InputDecoration(labelText: 'clients_unit'.tr()),
                   value: clientsUnit,
-                  items: const [
-                    DropdownMenuItem(value: 'day', child: Text('Per day')),
-                    DropdownMenuItem(value: 'week', child: Text('Per week')),
-                    DropdownMenuItem(value: 'month', child: Text('Per month')),
+                  items: [
+                    DropdownMenuItem(value: 'day', child: Text('per_day').tr()),
+                    DropdownMenuItem(value: 'week', child: Text('per_week').tr()),
+                    DropdownMenuItem(value: 'month', child: Text('per_month').tr()),
                   ],
                   onChanged: (value) => setState(() => clientsUnit = value!),
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Minutes per procedure'),
+                  decoration: InputDecoration(labelText: 'minutes_per_procedure'.tr()),
                   keyboardType: TextInputType.number,
-                  validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                  validator: (value) => value == null || value.isEmpty ? 'required'.tr() : null,
                   onChanged: (value) => timePerClientMinutes = int.tryParse(value) ?? 0,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Average material cost (per month)'),
+                  decoration: InputDecoration(labelText: 'avg_material_cost'.tr()),
                   keyboardType: TextInputType.number,
                   onChanged: (value) => materialsCost = double.tryParse(value) ?? 0,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Rent/utilities/taxes (monthly)'),
+                  decoration: InputDecoration(labelText: 'rent_taxes'.tr()),
                   keyboardType: TextInputType.number,
                   onChanged: (value) => rentCost = double.tryParse(value) ?? 0,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Training/licensing/services (monthly)'),
+                  decoration: InputDecoration(labelText: 'training_licenses'.tr()),
                   keyboardType: TextInputType.number,
                   onChanged: (value) => licenseCost = double.tryParse(value) ?? 0,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Insurance (monthly)'),
+                  decoration: InputDecoration(labelText: 'insurance'.tr()),
                   keyboardType: TextInputType.number,
                   onChanged: (value) => insuranceCost = double.tryParse(value) ?? 0,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Minutes per week on social media'),
+                  decoration: InputDecoration(labelText: 'social_media_minutes'.tr()),
                   keyboardType: TextInputType.number,
                   onChanged: (value) => socialMediaMinutes = int.tryParse(value) ?? 0,
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(labelText: 'Desired income'),
+                  decoration: InputDecoration(labelText: 'desired_income'.tr()),
                   keyboardType: TextInputType.number,
                   onChanged: (value) => desiredIncome = double.tryParse(value) ?? 0,
                 ),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Income unit'),
+                  decoration: InputDecoration(labelText: 'income_unit'.tr()),
                   value: incomeUnit,
-                  items: const [
-                    DropdownMenuItem(value: 'hour', child: Text('Per hour')),
-                    DropdownMenuItem(value: 'month', child: Text('Per month')),
+                  items: [
+                    DropdownMenuItem(value: 'hour', child: Text('per_hour').tr()),
+                    DropdownMenuItem(value: 'month', child: Text('per_month').tr()),
                   ],
                   onChanged: (value) => setState(() => incomeUnit = value!),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: const Text('Submit'),
+                  child: Text('submit').tr(),
                 ),
               ],
             ),
