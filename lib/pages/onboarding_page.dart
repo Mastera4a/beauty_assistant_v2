@@ -7,7 +7,9 @@ import 'package:easy_localization/easy_localization.dart';
 import '../utils/restart_widget.dart';
 
 class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({super.key});
+  final UserSettings? existingSettings;
+
+  const OnboardingPage({super.key, this.existingSettings});
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
@@ -31,6 +33,30 @@ class _OnboardingPageState extends State<OnboardingPage> {
   double desiredIncome = 0;
   String incomeUnit = 'hour';
   String currency = '€';
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.existingSettings != null) {
+      final s = widget.existingSettings!;
+      workMode = s.workMode;
+      usesSterilizer = s.usesDrySterilizer;
+      usesAccounting = s.usesAccountingSoftware;
+      clientsAmount = s.clientsPerUnit;
+      clientsUnit = s.clientsUnit;
+      timePerClientMinutes = s.timePerClientMinutes;
+      materialsCost = s.avgMaterialCost;
+      rentCost = s.rentTaxes;
+      licenseCost = s.trainingCosts;
+      insuranceCost = s.insuranceCost;
+      socialMediaMinutes = s.socialMediaMinutes;
+      usesOnlineBooking = s.usesOnlineBooking;
+      desiredIncome = s.desiredIncome;
+      incomeUnit = s.incomeUnit;
+      currency = s.currency;
+    }
+  }
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {

@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../models/user_settings.dart';
 import '../services/preferences_service.dart';
 import '../services/pricing_service.dart';
+import 'edit_onboarding_page.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 
 class HomePage extends StatefulWidget {
@@ -111,6 +112,16 @@ class _HomePageState extends State<HomePage> {
                     ? 'below_optimal'.tr()
                     : 'optimal'.tr()),
               ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: Text('edit_onboarding_info'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const EditOnboardingPage()),
+                );
+              },
             ),
           ],
         ),
