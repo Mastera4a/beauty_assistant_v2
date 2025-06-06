@@ -8,7 +8,7 @@ class PricingService {
 
   PricingService(this.settings);
 
-  /// Получаем количество клиентов в месяц на основе единицы измерения
+  /// Количество клиентов в месяц
   int get _monthlyClients {
     switch (settings.clientsUnit) {
       case 'day':
@@ -21,39 +21,43 @@ class PricingService {
     }
   }
 
-  /// Общие ежемесячные расходы
-  double get _totalExpenses =>
+  /// Время на соцсети (в часах в месяц)
+  double get _socialMediaHoursPerMonth => (settings.socialMediaMinutes * 4) / 60;
+
+  /// Общее количество времени, затраченное на клиентов (в часах)
+  double get _clientHours => (_monthlyClients * settings.timePerClientMinutes) / 60;
+
+  /// Общие рабочие часы (клиенты + соцсети)
+  double get _totalWorkHours => _clientHours + _socialMediaHoursPerMonth;
+
+  /// Общие расходы в месяц
+  double get _monthlyExpenses =>
       settings.avgMaterialCost +
       settings.rentTaxes +
-      settings.trainingCosts +
+      (settings.trainingCosts / 12) +
       settings.insuranceCost;
 
-  /// Вычисляем желаемый доход за месяц
+  /// Себестоимость (без учёта прибыли)
+  double get costPerClient => _monthlyExpenses / _monthlyClients;
+
+  /// Желаемый доход в месяц
   double get _targetIncome {
     if (settings.incomeUnit == 'hour') {
-      final totalMinutes = _monthlyClients * settings.timePerClientMinutes;
-      return (totalMinutes / 60) * settings.desiredIncome;
+      return settings.desiredIncome * _totalWorkHours;
     } else {
       return settings.desiredIncome;
     }
   }
 
-  /// Рекомендуемая цена за клиента
+  /// Рекомендуемая цена за процедуру
   double get recommendedPricePerClient =>
-      (_targetIncome + _totalExpenses) / _monthlyClients;
+      costPerClient + (settings.desiredIncome * (settings.timePerClientMinutes / 60));
 
-  /// Чистый доход за месяц (доход − расходы)
+  /// Чистый доход за месяц
   double get monthlyNetIncome =>
-      recommendedPricePerClient * _monthlyClients - _totalExpenses;
+      (recommendedPricePerClient * _monthlyClients) - _monthlyExpenses;
 
-  /// Цена за клиента без желаемого дохода (себестоимость)
-  double get costPerClient =>
-      settings.avgMaterialCost +
-      settings.rentTaxes / _monthlyClients +
-      settings.trainingCosts / _monthlyClients +
-      settings.insuranceCost / _monthlyClients;
-
-  /// Проверка на минимальный порог
+  /// Проверка на минимальную цену
   bool get isBelowOptimal => recommendedPricePerClient < 50;
 
   /// Валюта (из глобальных настроек)
